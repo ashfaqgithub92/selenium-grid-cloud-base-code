@@ -16,11 +16,23 @@ public class BaseTest {
 	protected WebDriver driver;
 	protected Logger log;
 
-	@Parameters({ "browser" })
+	@Parameters({ "browser", "environment" })
 	@BeforeMethod(alwaysRun = true)
-	public void setUp(Method method, @Optional("chrome") String browser, ITestContext ctx) {
+	public void setUp(Method method, @Optional("chrome") String browser, @Optional("Local") String environment, ITestContext ctx) {
 		log = LogManager.getLogger(ctx.getCurrentXmlTest().getSuite().getName());
-		driver = new BrowserDriverFactory(browser, log).createDriver();
+		
+		switch (environment) {
+		case "Local":
+			driver = new BrowserDriverFactory(browser, log).createDriver();
+			break;
+		case "Grid":
+			driver = new GridDriverFactory(browser, log).createDriver();
+			break;
+		default:
+			driver = new BrowserDriverFactory(browser, log).createDriver();
+			break;
+		}
+		
 		driver.manage().window().maximize();
 	}
 
